@@ -10,8 +10,34 @@ import {
   Badge,
   useColorModeValue,
 } from '@chakra-ui/react';
+import { Users } from "../types";
+import { callAPI } from "../callAPI";
+import { useState, useEffect } from 'react';
 
 export default function UserCard() {
+  const [users, setUsers] = useState([] as Users[])
+
+  useEffect(() => {
+    getUsers()
+  }, []);
+
+  const getUsers = async () => {
+    try {
+      const response = await callAPI(
+        `https://8000-bravo1b9-nestnexttestba-629wb159h0i.ws-eu73.gitpod.io/users`,
+        'GET'
+      )
+      const usersJson = await response.json();
+      if (usersJson && usersJson.status == true) {
+        console.log(usersJson);
+        setUsers(usersJson.data);
+        console.log(users);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
   return (
     <Center py={6}>
       <Box
