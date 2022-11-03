@@ -24,7 +24,7 @@ export default function UserCard() {
   const getUsers = async () => {
     try {
       const response = await callAPI(
-        `https://8000-bravo1b9-nestnexttestba-629wb159h0i.ws-eu73.gitpod.io/users`,
+        'https://8000-bravo1b9-nestnexttestba-629wb159h0i.ws-eu73.gitpod.io/users',
         'GET'
       )
       const usersJson = await response.json();

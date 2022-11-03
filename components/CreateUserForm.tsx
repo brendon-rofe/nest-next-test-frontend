@@ -17,12 +17,22 @@ import { callAPI } from "../callAPI";
 export default function CreateUserForm() {
   const [isLoading, setLoading] = useState(false);
   const [name, setName] = useState('');
-  const [age, setAge] = useState('');
+  const [age, setAge] = useState<any | null>(null);;
 
   const createUser = async () => {
     setLoading(true);
     try {
-      
+      const response = await callAPI(
+        'https://8000-bravo1b9-nestnexttestba-629wb159h0i.ws-eu73.gitpod.io/users',
+        'POST',
+        { name, age }
+      )
+      const resJson = await response.json()
+      if (resJson.status == true) {
+        location.reload();
+      } else {
+        alert('There were some errors, try again...');
+      }
     } catch (e) {
       console.log(e)
     }
@@ -55,14 +65,14 @@ export default function CreateUserForm() {
                 <Box>
                   <FormControl id="name" isRequired>
                     <FormLabel>Name</FormLabel>
-                    <Input type="text"  />
+                    <Input type="text" onChange={(e) => setName(e.target.value)} />
                   </FormControl>
                 </Box>
               </HStack>
               <FormControl id="age" isRequired>
                 <FormLabel>Age</FormLabel>
                 <InputGroup>
-                  <Input type="number"  />
+                  <Input type="number" onChange={(e) => setAge(e.target.value)} />
                 </InputGroup>
               </FormControl>
               <Stack spacing={10} pt={2}>
