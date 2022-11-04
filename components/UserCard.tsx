@@ -2,20 +2,37 @@ import {
   Heading,
   Avatar,
   Box,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  FormControl,
+  FormLabel,
+  Input,
+  ModalFooter,
   Center,
   Text,
   Stack,
   Button,
   Link,
+  useDisclosure,
   Badge,
   useColorModeValue,
 } from "@chakra-ui/react";
 import { Users } from "../types";
 import { callAPI } from "../callAPI";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 export default function UserCard() {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const initialRef = useRef(null);
+  const finalRef = useRef(null);
+
   const [users, setUsers] = useState([] as Users[]);
+  const [isLoading, setIsloading] = useState(false);
 
   useEffect(() => {
     getUsers();
@@ -40,8 +57,40 @@ export default function UserCard() {
 
   return (
     <>
+      <Modal
+        initialFocusRef={initialRef}
+        finalFocusRef={finalRef}
+        isOpen={isOpen}
+        onClose={onClose}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Edit user</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+          {isLoading && <p>Updating user...</p>}
+            <FormControl>
+              <FormLabel>Name</FormLabel>
+              <Input ref={initialRef} placeholder="type name here" />
+            </FormControl>
+
+            <FormControl mt={4}>
+              <FormLabel>Age</FormLabel>
+              <Input placeholder="type age here" />
+            </FormControl>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button colorScheme="blue" mr={3}>
+              Save
+            </Button>
+            <Button onClick={onClose}>Cancel</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+
       {users.map((user, i) => (
-      <Center key={i} py={6}>
+        <Center key={i} py={6}>
           <Box
             maxW={"320px"}
             w={"full"}
@@ -107,8 +156,9 @@ export default function UserCard() {
                 _focus={{
                   bg: "gray.200",
                 }}
+                onClick={onOpen}
               >
-                Message
+                Edit
               </Button>
               <Button
                 flex={1}
@@ -126,7 +176,7 @@ export default function UserCard() {
                   bg: "blue.500",
                 }}
               >
-                Follow
+                Delete
               </Button>
             </Stack>
           </Box>
