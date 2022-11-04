@@ -50,6 +50,14 @@ export default function UserCard() {
     };
   };
 
+  const handleDelete = (id: any) => {
+    return (event: React.MouseEvent) => {
+      setId(id);
+      deleteUser(id);
+      event.preventDefault();
+    };
+  };
+
   const getUsers = async () => {
     try {
       const response = await callAPI(
@@ -90,7 +98,6 @@ export default function UserCard() {
 
   const deleteUser = async (id: any) => {
     console.log(id);
-    setLoading(true);
     try {
       const response = await callAPI(
         `https://8000-bravo1b9-nestnexttestba-629wb159h0i.ws-eu73.gitpod.io/users/${id}`,
@@ -105,7 +112,6 @@ export default function UserCard() {
     } catch (e) {
       console.log(e);
     }
-    setLoading(false);
   };
 
   return (
@@ -228,6 +234,7 @@ export default function UserCard() {
                 _focus={{
                   bg: "blue.500",
                 }}
+                onClick={handleDelete(user.id)}
               >
                 Delete
               </Button>
