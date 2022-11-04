@@ -23,7 +23,7 @@ import {
 } from "@chakra-ui/react";
 import { Users } from "../types";
 import { callAPI } from "../callAPI";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, MouseEvent } from "react";
 
 export default function UserCard() {
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -32,11 +32,23 @@ export default function UserCard() {
   const finalRef = useRef(null);
 
   const [users, setUsers] = useState([] as Users[]);
-  const [isLoading, setIsloading] = useState(false);
+  const [name, setName] = useState('');
+  const [id, setId] = useState<any | null>(null);
+  const [age, setAge] = useState('');
+  const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
     getUsers();
   }, []);
+
+  const handleEdit = (id: any) => {
+    return (event: React.MouseEvent) => {
+      onOpen();
+      setId(id);
+      updateUser(id);
+      event.preventDefault();
+    };
+  };
 
   const getUsers = async () => {
     try {
@@ -55,6 +67,47 @@ export default function UserCard() {
     }
   };
 
+  const updateUser = async (id: any) => {
+    console.log(id);
+    setLoading(true);
+    try {
+      const response = await callAPI(
+        `https://8000-bravo1b9-nestnexttestba-629wb159h0i.ws-eu73.gitpod.io/users/${id}`,
+        "PUT",
+        { name, age }
+      );
+      const resJson = await response.json()
+      if (resJson.status == true) {
+        location.reload();
+      } else {
+        alert('There were some errors, try again...');
+      }
+    } catch (e) {
+      console.log(e);
+    }
+    setLoading(false);
+  };
+
+  const deleteUser = async (id: any) => {
+    console.log(id);
+    setLoading(true);
+    try {
+      const response = await callAPI(
+        `https://8000-bravo1b9-nestnexttestba-629wb159h0i.ws-eu73.gitpod.io/users/${id}`,
+        "DELETE"
+      );
+      const resJson = await response.json()
+      if (resJson.status == true) {
+        location.reload();
+      } else {
+        alert('There were some errors, try again...');
+      }
+    } catch (e) {
+      console.log(e);
+    }
+    setLoading(false);
+  };
+
   return (
     <>
       <Modal
@@ -71,17 +124,17 @@ export default function UserCard() {
           {isLoading && <p>Updating user...</p>}
             <FormControl>
               <FormLabel>Name</FormLabel>
-              <Input ref={initialRef} placeholder="type name here" />
+              <Input ref={initialRef} placeholder="type name here" onChange={(e) => setName(e.target.value)} />
             </FormControl>
 
             <FormControl mt={4}>
               <FormLabel>Age</FormLabel>
-              <Input placeholder="type age here" />
+              <Input placeholder="type age here" onChange={(e) => setAge(e.target.value)} />
             </FormControl>
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="blue" mr={3}>
+            <Button colorScheme="blue" mr={3} onClick={() => { updateUser(id) }}>
               Save
             </Button>
             <Button onClick={onClose}>Cancel</Button>
@@ -156,7 +209,7 @@ export default function UserCard() {
                 _focus={{
                   bg: "gray.200",
                 }}
-                onClick={onOpen}
+                onClick={handleEdit(user.id)}
               >
                 Edit
               </Button>

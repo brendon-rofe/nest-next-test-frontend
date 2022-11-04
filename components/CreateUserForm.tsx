@@ -17,7 +17,7 @@ import { callAPI } from "../callAPI";
 export default function CreateUserForm() {
   const [isLoading, setLoading] = useState(false);
   const [name, setName] = useState('');
-  const [age, setAge] = useState<any | null>(null);;
+  const [age, setAge] = useState<any | null>(null);
 
   const createUser = async () => {
     setLoading(true);
